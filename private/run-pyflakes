@@ -13,12 +13,13 @@
 # FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
 # for more details.
 
-PYTHON=${PYTHON:-python}
+PYTHON=${PYTHON:-python3}
 pyflakes=$(command -v pyflakes) || { echo pyflakes not found >&2; exit 1; }
 if [ $# -eq 0 ]
 then
     set -- "${0%/*}/.."
 fi
+# FIXME
 # It would be tempting to use "python -m pyflakes" here,
 # but that doesn't work in Python 2.6.
 ! "$PYTHON" "$pyflakes" "$@" \

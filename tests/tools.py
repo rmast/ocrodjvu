@@ -150,12 +150,12 @@ def interim(obj, **override):
         (key, getattr(obj, key))
         for key in override
     )
-    for key, value in override.iteritems():
+    for key, value in iter(override.items()):
         setattr(obj, key, value)
     try:
         yield
     finally:
-        for key, value in copy.iteritems():
+        for key, value in iter(copy.items()):
             setattr(obj, key, value)
 
 @contextlib.contextmanager
@@ -164,10 +164,10 @@ def interim_environ(**override):
     copy_keys = keys & set(os.environ)
     copy = dict(
         (key, value)
-        for key, value in os.environ.iteritems()
+        for key, value in iter(os.environ.items())
         if key in copy_keys
     )
-    for key, value in override.iteritems():
+    for key, value in iter(override.items()):
         if value is None:
             os.environ.pop(key, None)
         else:
