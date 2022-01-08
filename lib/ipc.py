@@ -64,7 +64,7 @@ def get_signal_names():
             del data['SIGCLD']
     except KeyError:  # no coverage
         pass
-    return dict((no, name) for name, no in data.items())
+    return dict((no, name) for name, no in iter(data.items()))
 
 CalledProcessError = subprocess.CalledProcessError
 
@@ -96,7 +96,7 @@ class Subprocess(subprocess.Popen):
         lc_ctype = env.get('LC_ALL') or env.get('LC_CTYPE') or env.get('LANG')
         env = dict(
             (k, v)
-            for k, v in env.items()
+            for k, v in iter(env.items())
             if not (k.startswith('LC_') or k in ('LANG', 'LANGUAGE'))
         )
         if lc_ctype:
