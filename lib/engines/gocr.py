@@ -133,8 +133,8 @@ class Engine(common.Engine):
         except OSError:
             raise errors.EngineNotFound(Engine.name)
         try:
-            line = gocr.stderr.read()
-            m = _version_re.search(line)
+            line = gocr.stderr.read();
+            m = _version_re.search(str(line))
             if not m:
                 raise errors.EngineNotFound(Engine.name)
             version = tuple(map(int, m.groups()))
