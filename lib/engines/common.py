@@ -57,6 +57,9 @@ class Output(object):
         if self.format is None:
             raise TypeError('output format is not defined')
 
+    def __bytes__(self):
+        return self._contents
+
     def __str__(self):
         return self._contents
 
@@ -64,6 +67,9 @@ class Output(object):
         path = '{base}.{ext}'.format(base=prefix, ext=self.format)
         with open(path, 'wb') as file:
             file.write(str(self))
+
+    def as_bytesio(self):
+        return io.BytesIO(bytes(self))
 
     def as_stringio(self):
         return io.StringIO(str(self))

@@ -458,14 +458,25 @@ class Context(djvu.decode.Context):
             if self._debug:
                 result.save(os.path.join(self._temp_dir, '{n:06}'.format(n=page.n)))
             self.save_raw_ocr(page, result)
-            [text] = self._engine.extract_text(result.as_stringio(),
-                rotation=page.rotation,
-                details=self._options.details,
-                uax29=self._options.uax29,
-                html5=self._options.html5,
-                fix_utf8=self._engine.needs_utf8_fix,
-                page_size=size
-            )
+
+            if self._engine.name == 'tesseract' or self._engine.name == 'cuneiform' or self._engine.name == '_dummy':
+                [text] = self._engine.extract_text(result.as_stringio(),
+                    rotation=page.rotation,
+                    details=self._options.details,
+                    uax29=self._options.uax29,
+                    html5=self._options.html5,
+                    fix_utf8=self._engine.needs_utf8_fix,
+                    page_size=size
+                )
+            else:
+                [text] = self._engine.extract_text(result.as_bytesio(),
+                    rotation=page.rotation,
+                    details=self._options.details,
+                    uax29=self._options.uax29,
+                    html5=self._options.html5,
+                    fix_utf8=self._engine.needs_utf8_fix,
+                    page_size=size
+                )
             # It should be: (page 0 0 <width> <height> …):
             assert len(text) > 5
             return text
