@@ -44,7 +44,7 @@ def main():
     ]
     path = os.path.join('tests', 'coverage')
     plugin = Coverage()
-    report_stream = plugin.stream = io.BytesIO()
+    report_stream = plugin.stream = io.StringIO()
     print('Generated automatically by private/update-coverage. '
         'Do not edit.\n', file=report_stream)
     plugins = [plugin, nose.plugins.allmodules.AllModules()]

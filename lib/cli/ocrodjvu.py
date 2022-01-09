@@ -459,7 +459,7 @@ class Context(djvu.decode.Context):
                 result.save(os.path.join(self._temp_dir, '{n:06}'.format(n=page.n)))
             self.save_raw_ocr(page, result)
 
-            if self._engine.name == 'tesseract' or self._engine.name == 'cuneiform' or self._engine.name == '_dummy':
+            if self._engine.name != 'gocr':
                 [text] = self._engine.extract_text(result.as_stringio(),
                     rotation=page.rotation,
                     details=self._options.details,

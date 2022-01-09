@@ -20,6 +20,9 @@ from builtins import object
 import functools
 import re
 import shlex
+import sys
+import locale
+import codecs
 
 from . import common
 from .. import errors
@@ -97,7 +100,6 @@ def scan(stream, settings):
                 if not m:
                     raise errors.MalformedOcrOutput('bad character description: {line!r}'.format(line=line))
                 [text] = m.groups()
-                text = text.decode('UTF-8')
             return text_zones.Zone(const.TEXT_ZONE_CHARACTER, bbox, [text])
         raise errors.MalformedOcrOutput('unexpected line: {line!r}'.format(line=line))
     raise errors.MalformedOcrOutput('unexpected line at EOF: {line!r}'.format(line=line))
@@ -160,6 +162,7 @@ class Engine(common.Engine):
             stdin=ipc.DEVNULL,
             stdout=ipc.PIPE,
         )
+        worker.stdout=codecs.getreader(sys.stdout.encoding or locale.getpreferredencoding())(worker.stdout)
         try:
             return common.Output(
                 worker.stdout.read(),
