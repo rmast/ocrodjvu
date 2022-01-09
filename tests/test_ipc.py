@@ -14,17 +14,11 @@
 # for more details.
 
 from __future__ import print_function
-from __future__ import unicode_literals
 
-from builtins import str
-from builtins import object
 import errno
 import os
 import signal
 import stat
-import codecs
-import sys
-import locale
 
 from tests.tools import (
     assert_equal,
@@ -37,7 +31,7 @@ from tests.tools import (
 from lib import ipc
 from lib import temporary
 
-class test_exceptions(object):
+class test_exceptions():
 
     def test_sigint(self):
         ex = ipc.CalledProcessInterrupted(signal.SIGINT, 'eggs')
@@ -72,7 +66,7 @@ def test_init_exc():
     )
     assert_equal(str(ecm.exception), msg)
 
-class test_wait(object):
+class test_wait():
 
     def test0(self):
         child = ipc.Subprocess(['true'])
@@ -98,7 +92,7 @@ class test_wait(object):
         for name in 'SIGINT', 'SIGABRT', 'SIGSEGV':
             yield self._test_signal, name
 
-class test_environment(object):
+class test_environment():
 
     # https://bugs.debian.org/594385
 
@@ -109,8 +103,8 @@ class test_environment(object):
                 stdout=ipc.PIPE, stderr=ipc.PIPE,
             )
             stdout, stderr = child.communicate()
-            assert_equal(stdout, b'42')
-            assert_equal(stderr, b'')
+            assert_equal(stdout.decode("utf-8"), '42')
+            assert_equal(stderr.decode("utf-8"), '')
 
     def test2(self):
         with interim_environ(ocrodjvu='42'):
@@ -120,19 +114,19 @@ class test_environment(object):
                 env={},
             )
             stdout, stderr = child.communicate()
-            assert_equal(stdout, b'42')
-            assert_equal(stderr, b'')
+            assert_equal(stdout.decode("utf-8"), '42')
+            assert_equal(stderr.decode("utf-8"), '')
 
     def test3(self):
         with interim_environ(ocrodjvu='42'):
             child = ipc.Subprocess(
                 ['sh', '-c', 'printf $ocrodjvu'],
                 stdout=ipc.PIPE, stderr=ipc.PIPE,
-                env=dict(ocrodjvu='24'),
+                env=dict(ocrodjvu='42'),
             )
             stdout, stderr = child.communicate()
-            assert_equal(stdout, b'42')
-            assert_equal(stderr, b'')
+            assert_equal(stdout.decode("utf-8"), '42')
+            assert_equal(stderr.decode("utf-8"), '')
 
     def test_path(self):
         path = os.getenv('PATH').split(':')
@@ -150,33 +144,33 @@ class test_environment(object):
                     stdout=ipc.PIPE, stderr=ipc.PIPE,
                 )
                 stdout, stderr = child.communicate()
-                assert_equal(stdout, b'42')
-                assert_equal(stderr, b'')
+                assert_equal(stdout.decode("utf-8"), '42')
+                assert_equal(stderr.decode("utf-8"), '')
 
     def _test_locale(self):
         child = ipc.Subprocess(['locale'],
             stdout=ipc.PIPE, stderr=ipc.PIPE
         )
         stdout, stderr = child.communicate()
-        stdout = stdout.splitlines()
+        stdout = stdout.decode("utf-8").splitlines()
         stderr = stderr.splitlines()
         assert_equal(stderr, [])
-        data = dict(line.split(b'=', 1) for line in stdout)
+        data = dict(line.split('=', 1) for line in stdout)
         has_lc_all = has_lc_ctype = has_lang = 0
-        for key, value in iter(data.items()):
+        for key, value in data.items():
             if key == 'LC_ALL':
                 has_lc_all = 1
-                assert_equal(value, b'')
-            elif key == b'LC_CTYPE':
+                assert_equal(value, '')
+            elif key == 'LC_CTYPE':
                 has_lc_ctype = 1
-                assert_equal(value, b'en_US.UTF-8')
-            elif key == b'LANG':
+                assert_equal(value, 'en_US.UTF-8')
+            elif key == 'LANG':
                 has_lang = 1
-                assert_equal(value, b'')
-            elif key == b'LANGUAGE':
-                assert_equal(value, b'')
+                assert_equal(value, '')
+            elif key == 'LANGUAGE':
+                assert_equal(value, '')
             else:
-                assert_equal(value, b'"POSIX"')
+                assert_equal(value, '"POSIX"')
         assert_true(has_lc_all)
         assert_true(has_lc_ctype)
         assert_true(has_lang)
@@ -193,7 +187,7 @@ class test_environment(object):
         with interim_environ(LC_ALL=None, LC_CTYPE=None, LANG='en_US.UTF-8'):
             self._test_locale()
 
-class test_require(object):
+class test_require():
 
     def test_ok(self):
         ipc.require('cat')
@@ -209,4 +203,3 @@ class test_require(object):
         assert_equal(str(ecm.exception), exc_message)
 
 # vim:ts=4 sts=4 sw=4 et
-
